@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="sl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ocenjevanje WII Shop - POTRDILO</title>
+  <style>
+    /* Celoten izgled, font Times New Roman in KREPKO */
+    body { font-family: "Times New Roman", Times, serif; margin: 20px; }
+    h1 { font-weight: 700; text-align: center; }
+    label { display:block; margin-top:8px; font-weight:700; }
+    input[type="text"], input[type="number"], select {
+      font-family: "Times New Roman", Times, serif;
+      font-weight:700;
+      font-size:16px;
+      padding:6px;
+      margin-top:4px;
+    }
+    table { border-collapse: collapse; width:100%; margin-top:10px; }
+    th, td { border:1px solid #000; padding:6px; text-align:left; font-weight:700; }
+    th { background:#eee; font-weight:700; }
+    .small { font-size:14px; }
+    .controls { margin-top:12px; display:flex; gap:12px; align-items:center; }
+    button { font-weight:700; padding:8px 12px; cursor:pointer; }
+    #certificate { 
+      width: 800px; 
+      padding:20px; 
+      border:2px solid #000; 
+      margin-top:20px; 
+      background:white;
+    }
+    .center { text-align:center; }
+    .inline { display:inline-block; margin-right:12px; }
+    .right { text-align:right; }
+    /* In the PDF everything must be bold - ensure */
+    #certificate * { font-weight:700; font-family:"Times New Roman", Times, serif !important; }
+    .boldline { border-bottom:2px solid #000; display:inline-block; min-width:160px; padding:2px 6px; }
+  </style>
+</head>
+<body>
+  <h1>OCENJEVANJE ZAPOSLENIH — WII SHOP</h1>
+
+  <div>
+    <label>Šifra zaposlenega (vpiši):</label>
+    <input id="sifra" type="text" placeholder="npr. 142" />
+    <div style="margin-top:8px;">
+      <span style="font-weight:700">Zaposleni: </span>
+      <span id="imePriimek" style="font-weight:700">—</span>
+    </div>
+
+    <div class="controls">
+      <div>
+        <label>Ocenjevalna pola (A ali B):</label>
+        <select id="polaSelect">
+          <option value="A">A</option>
+          <option value="B">B</option>
+        </select>
+      </div>
+
+      <div style="margin-left:10px;">
+        <label>Datum:</label>
+        <input id="datum" type="text" placeholder="DD.MM.LLLL" />
+      </div>
+    </div>
+  </div>
+
+  <!-- PRVA TABELA: BLAGAJNA -->
+  <h2 style="margin-top:18px; font-weight:700">Rezultati izvajanja vaje uporabe blagajne WII Shopa</h2>
+  <table id="table1">
+    <thead>
+      <tr>
+        <th>Kriterij</th>
+        <th>Dosežene točke</th>
+        <th>Možne točke</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>SPREJEM NAROČILA</td>
+        <td><input class="t1" type="number" min="0" step="1" value="0" /></td>
+        <td class="possible">3</td>
+      </tr>
+      <tr>
+        <td>TIPKANJE PAKETA (Po pošti / za sabo)</td>
+        <td><input class="t1" type="number" min="0" step="1" value="0" /></td>
+        <td class="possible">5</td>
+      </tr>
+      <tr>
+        <td>ARTIKLI in UPOŠTEVANJE PRAVIL</td>
+        <td><input class="t1" type="number" min="0" step="1" value="0" /></td>
+        <td class="possible">5</td>
+      </tr>
+      <tr>
+        <td>POPUST ZA ZAPOLENE in PLAČILO</td>
+        <td><input class="t1" type="number" min="0" step="1" value="0" /></td>
+        <td class="possible">4</td>
+      </tr>
+      <tr>
+        <th>Skupaj</th>
+        <th id="t1sum">0</th>
+        <th id="t1max">17</th>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- DRUGA TABELA: TISKALNIK -->
+  <h2 style="margin-top:18px; font-weight:700">Rezultati izvajanja vaje uporabe prenosnega tiskalnika potrdil za zaposlene</h2>
+  <table id="table2">
+    <thead>
+      <tr>
+        <th>Kriterij</th>
+        <th>Dosežene točke</th>
+        <th>Možne točke</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TISKANJE ZAČETNE BLAGAJNE</td>
+        <td><input class="t2" type="number" min="0" step="1" value="0" /></td>
+        <td class="possible">2</td>
+      </tr>
+      <tr>
+        <td>SHRANJEVANJE POTRDILA</td>
+        <td><input class="t2" type="number" min="0" step="1" value="0" /></td>
+        <td class="possible">4</td>
+      </tr>
+      <tr>
+        <th>Skupaj</th>
+        <th id="t2sum">0</th>
+        <th id="t2max">6</th>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:14px;">
+    <label>Šifre zaposlenih (hitri izbor):</label>
+    <div class="inline small">
+      <button onclick="fillByCode('142')">142 - Tinkara JELEN</button>
+      <button onclick="fillByCode('172')">172 - Anže JELEN</button>
+    </div>
+  </div>
+
+  <div style="margin-top:18px;">
+    <button id="generateBtn" onclick="generatePDF()">SHRANI IN POTRDI</button>
+    <span style="margin-left:12px; font-weight:700" id="statusText"></span>
+  </div>
+
+  <!-- TUKAJ JE VSEBINA KI SE BO PRENESLA V PDF - naredimo identično strukturo kot POTRDIL1.pdf -->
+  <div id="certificate" role="document" aria-label="POTRDILO" style="background:white;">
+    <div class="center" style="font-size:28px; margin-bottom:10px; font-weight:700;">P O T R D I L O</div>
+
+    <p style="font-weight:700;">
+      Po zgoraj navedenih podatkih, WII Shop izdaja potrdilo, da je zaposleni / zaposlena
+    </p>
+
+    <div style="margin:10px 0;">
+      <span class="boldline" id="pdf_name_line">_____________________________________ 1</span>
+      <span style="display:inline-block; width:20px;"></span>
+      <span class="boldline" id="pdf_date_line">dne _____________________________________2</span>
+    </div>
+
+    <p style="font-weight:700;">
+      opravljal/ -a vajo uporabe blagajne in prenosnega tiskalnika potrdil zaposlene. Spodaj je
+      tabela s specifikacijami in rezultati izvajanja vaje.
+    </p>
+
+    <p style="font-weight:700;">Rezultati izvajanja vaje uporabe blagajne WII Shopa:</p>
+
+    <p style="font-weight:700;">
+      Na podlagi testne pole številka <span class="boldline" id="pdf_pola1">______ 3</span>, potrjujemo, da je zgoraj omenjen/-a zaposleni/
+      zaposlena <span class="boldline" id="pdf_name_repeat">___________________________4</span> opravil/ -a preizkus uporabe WII Shop blagajne.
+    </p>
+
+    <p style="font-weight:700;">Rezultati izvajanja vaje uporabe prenosnega tiskalnika potrdil za zaposlene:</p>
+
+    <p style="font-weight:700;">
+      Na podlagi testne pole številka <span class="boldline" id="pdf_pola2">______ 5</span>, potrjujemo, da je zgoraj omenjen/-a zaposleni/
+      zaposlena <span class="boldline" id="pdf_name_repeat2">_________________________6</span> opravil/ -a preizkus uporabe WII Shop blagajne.
+    </p>
+
+    <p style="font-weight:700;">
+      Na podlagi rezultatov zgoraj omenjenemu uporabniku <span class="boldline" id="pdf_overall">______ 7</span> dovoljena samostojna
+      pozicija na blagajni WII Shopa.
+    </p>
+
+    <div style="margin-top:16px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:20%;">št. zaposlenega</th>
+            <th style="width:40%;">zaposleni</th>
+            <th style="width:20%;">dosežene toke</th>
+            <th style="width:20%;">možne točke</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="pdf_code_cell"></td>
+            <td id="pdf_name_cell"></td>
+            <td id="pdf_sum_achieved"></td>
+            <td id="pdf_sum_possible"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Skripte: html2canvas + jspdf iz CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    // Map šifer to names
+    const codeToName = {
+      "142": "Tinkara JELEN",
+      "172": "Anže JELEN"
+    };
+
+    const sifraInput = document.getElementById('sifra');
+    const imePriimekSpan = document.getElementById('imePriimek');
+    const polaSelect = document.getElementById('polaSelect');
+    const datumInput = document.getElementById('datum');
+    const statusText = document.getElementById('statusText');
+
+    // update name when code changes
+    sifraInput.addEventListener('input', () => {
+      const v = sifraInput.value.trim();
+      if (codeToName[v]) {
+        imePriimekSpan.textContent = codeToName[v];
+      } else {
+        imePriimekSpan.textContent = "—";
+      }
+      refreshCertificateFields();
+    });
+
+    // prefill by code quick buttons
+    function fillByCode(code) {
+      sifraInput.value = code;
+      sifraInput.dispatchEvent(new Event('input'));
+      // set today's date as default
+      const d = new Date();
+      const dd = String(d.getDate()).padStart(2,'0');
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const yyyy = d.getFullYear();
+      datumInput.value = dd + "." + mm + "." + yyyy;
+      refreshCertificateFields();
+    }
+
+    // compute sums
+    function computeSums() {
+      // table1
+      const t1Inputs = document.querySelectorAll('#table1 input.t1');
+      let t1sum = 0;
+      t1Inputs.forEach(i => {
+        const val = parseInt(i.value) || 0;
+        t1sum += val;
+      });
+      document.getElementById('t1sum').textContent = t1sum;
+      document.getElementById('t1max').textContent = 17;
+
+      // table2
+      const t2Inputs = document.querySelectorAll('#table2 input.t2');
+      let t2sum = 0;
+      t2Inputs.forEach(i => {
+        const val = parseInt(i.value) || 0;
+        t2sum += val;
+      });
+      document.getElementById('t2sum').textContent = t2sum;
+      document.getElementById('t2max').textContent = 6;
+
+      // total across both for table in PDF
+      const totalAchieved = t1sum + t2sum;
+      const totalPossible = 17 + 6;
+      return { t1sum, t2sum, totalAchieved, totalPossible };
+    }
+
+    // add event listeners to inputs to recompute
+    document.querySelectorAll('#table1 input.t1, #table2 input.t2').forEach(inp => {
+      inp.addEventListener('input', () => {
+        computeSums();
+        refreshCertificateFields();
+      });
+    });
+
+    polaSelect.addEventListener('change', refreshCertificateFields);
+    datumInput.addEventListener('input', refreshCertificateFields);
+
+    function evaluateSuccess(achieved, possible) {
+      if (possible === 0) return false;
+      return (achieved / possible) >= 0.75;
+    }
+
+    // Populate fields inside certificate preview before PDF
+    function refreshCertificateFields() {
+      const name = codeToName[sifraInput.value.trim()] || imePriimekSpan.textContent;
+      document.getElementById('pdf_name_line').textContent = (name && name !== '—') ? name : '_____________________________________ 1';
+      if (datumInput.value && datumInput.value.trim() !== '') {
+        document.getElementById('pdf_date_line').textContent = 'dne ' + datumInput.value;
+      } else {
+        document.getElementById('pdf_date_line').textContent = 'dne _____________________________________2';
+      }
+
+      // pola (for both references)
+      const pola = polaSelect.value || 'A';
+      document.getElementById('pdf_pola1').textContent = pola;
+      document.getElementById('pdf_pola2').textContent = pola;
+
+      const sums = computeSums();
+      // fill names and totals in PDF table area
+      document.getElementById('pdf_code_cell').textContent = sifraInput.value.trim() || '';
+      document.getElementById('pdf_name_cell').textContent = name && name !== '—' ? name : '';
+      document.getElementById('pdf_sum_achieved').textContent = sums.totalAchieved;
+      document.getElementById('pdf_sum_possible').textContent = sums.totalPossible;
+
+      // lines 4 and 6: uspešno/ne uspešno for each table
+      const t1ok = evaluateSuccess(sums.t1sum, 17);
+      const t2ok = evaluateSuccess(sums.t2sum, 6);
+      document.getElementById('pdf_name_repeat').textContent = t1ok ? 'Uspešno' : 'Ne uspešno';
+      document.getElementById('pdf_name_repeat2').textContent = t2ok ? 'Uspešno' : 'Ne uspešno';
+
+      // overall JE/NI
+      const overall = (t1ok && t2ok) ? 'JE' : 'NI';
+      document.getElementById('pdf_overall').textContent = overall;
+
+      // status text on page
+      statusText.textContent = `Tabela1: ${sums.t1sum}/17 (${t1ok ? 'Uspešno' : 'Ne uspešno'}) | Tabela2: ${sums.t2sum}/6 (${t2ok ? 'Uspešno' : 'Ne uspešno'}) | Skupaj: ${sums.totalAchieved}/${sums.totalPossible}`;
+    }
+
+    // initial refresh
+    refreshCertificateFields();
+
+    async function generatePDF() {
+      // Validate minimal fields
+      const code = sifraInput.value.trim();
+      const name = codeToName[code] || imePriimekSpan.textContent;
+      if (!code || name === '—') {
+        alert('Prosimo vnesite veljavno šifro zaposlenega (ali uporabite hitri gumb).');
+        return;
+      }
+
+      // recompute & refresh fields
+      refreshCertificateFields();
+
+      // prepare file name
+      const pola = polaSelect.value || 'A';
+      const safeName = (name || 'unknown').replace(/\s+/g, '_').replace(/[^A-Za-zČčŠšŽžÁÉÍÓÚáéíóú_ÄäÖöÜü\-]/g,'');
+      const filename = `${code}_${safeName}_POTRDILO_O_VAJI_${pola}.pdf`;
+
+      // capture the certificate element using html2canvas
+      const cert = document.getElementById('certificate');
+
+      // temporarily set scale for higher resolution
+      const scale = 2; // increase for better quality
+      const opts = {
+        scale: scale,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      };
+
+      statusText.textContent = 'Generiram PDF ...';
+
+      try {
+        const canvas = await html2canvas(cert, opts);
+        const imgData = canvas.toDataURL('image/png');
+
+        // Create jsPDF and add image
+        const { jsPDF } = window.jspdf;
+        // A4 portrait: 210 x 297 mm
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        });
+
+        // convert canvas size pixels to mm for the PDF
+        const imgProps = {
+          widthPx: canvas.width,
+          heightPx: canvas.height
+        };
+        const pdfWidth = 180; // keep margins, center horizontally
+        const pdfHeight = (imgProps.heightPx * pdfWidth) / imgProps.widthPx;
+
+        const marginLeft = (210 - pdfWidth) / 2;
+        pdf.addImage(imgData, 'PNG', marginLeft, 20, pdfWidth, pdfHeight);
+        pdf.save(filename);
+
+        statusText.textContent = 'PDF prenesen: ' + filename;
+      } catch (err) {
+        console.error(err);
+        alert('Prišlo je do napake pri generiranju PDF. Oglejte si konzolo za podrobnosti.');
+        statusText.textContent = 'Napaka pri generiranju PDF.';
+      }
+    }
+  </script>
+</body>
+</html>
